@@ -41,6 +41,21 @@ func New() *Topic {
 	return t
 }
 
+// Publish returns false if the topic is closed and otherwise it
+// publishes the message and returns true.
+func (t *Topic) Publish(message interface{}) bool {
+	t.publisherWaitGroup.Add(1)
+	defer t.publisherWaitGroup.Done()
+
+	if t.IsClosed() {
+		return false
+	}
+
+	t.queue <- message
+
+	return true
+}
+
 // NewPublisher return false if the topic is closed and otherwise it returns
 // a new publisher and true.
 func (t *Topic) NewPublisher(outboxLen int) (*Publisher, bool) {
