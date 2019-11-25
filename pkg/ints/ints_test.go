@@ -10,7 +10,7 @@ func ExampleMax() {
 }
 
 func ExampleMin() {
-	fmt.Println(Max(-2, 3))
+	fmt.Println(Min(-2, 3))
 
 	// Output:
 	// -2
