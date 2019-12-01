@@ -8,7 +8,7 @@ func For(n int, fn func(i int)) {
 	Spawn(n, fn).Wait()
 }
 
-// For concurrently evaluates the given fn with values
+// Spawn concurrently evaluates the given fn with values
 // from 0 to n, and returns a WaitGroup to know when all
 // fn calls have completed.
 func Spawn(n int, fn func(i int)) *sync.WaitGroup {

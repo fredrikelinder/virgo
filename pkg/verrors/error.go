@@ -78,6 +78,6 @@ func (e *Error) replaceProcentAt() {
 
 func packageFileAndLine(fn string, line int) string {
 	parts := strings.FieldsFunc(fn, func(r rune) bool { return r == '/' })
-	n := ints.Max(0, len(parts)-2)
+	n := ints.IntMax(0, len(parts)-2)
 	return fmt.Sprintf("%s/%s:%v", parts[n], parts[n+1], line)
 }
