@@ -33,12 +33,12 @@ func Exit(logf Logf, s string, ok bool) {
 
 func formatFile(file string) string {
 	parts := strings.FieldsFunc(file, func(r rune) bool { return r == '/' })
-	n := ints.IntMax(0, len(parts)-2)
+	n := ints.IntsMax(0, len(parts)-2)
 	return strings.Join(parts[n:], "/")
 }
 
 func formatFunc(fn string) string {
 	parts := strings.FieldsFunc(fn, func(r rune) bool { return r == '.' })
-	n := ints.IntMax(0, len(parts)-1)
+	n := ints.IntsMax(0, len(parts)-1)
 	return strings.Join(parts[n:], "/")
 }
