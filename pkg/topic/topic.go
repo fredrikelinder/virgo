@@ -8,7 +8,7 @@ import (
 // template type Topic(Message)
 type Message = interface{}
 
-// Topic(Message) represents a unidirectional fan-in and fan-out
+// Topic represents a unidirectional fan-in and fan-out
 // communication channel.
 //
 // Publishers publish messages to the topic. Messages published
