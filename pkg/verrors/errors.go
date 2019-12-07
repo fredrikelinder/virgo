@@ -40,7 +40,7 @@ func (e *Errors) Error() string {
 	n := len(e.errs)
 	ss := make([]string, n)
 
-	con.For(n, func(i int) {
+	con.Current(n, func(i int) {
 		ss[i] = e.errs[i].Error()
 	})
 

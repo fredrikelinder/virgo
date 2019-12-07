@@ -2,9 +2,9 @@ package con
 
 import "sync"
 
-// For concurrently evaluates the given fn with values
+// Current concurrently evaluates the given fn with values
 // from 0 to n, and returns when all fn calls have completed.
-func For(n int, fn func(i int)) {
+func Current(n int, fn func(i int)) {
 	Spawn(n, fn).Wait()
 }
 
