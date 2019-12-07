@@ -6,11 +6,11 @@ import (
 )
 
 type subscriberSpy struct {
-	messages   []interface{}
+	messages   []Value
 	closeCount int
 }
 
-func (s *subscriberSpy) Consume(message interface{}) {
+func (s *subscriberSpy) Consume(message Value) {
 	s.messages = append(s.messages, message)
 }
 
@@ -91,7 +91,7 @@ func ExampleSubscriptionGroup() {
 
 	// we must merge messages from s0 and s1 and sort them
 	// to get a consistent test output
-	var messages []interface{}
+	var messages []Value
 	messages = append(messages, s0.messages...)
 	messages = append(messages, s1.messages...)
 	sort.Slice(messages, func(i, j int) bool {

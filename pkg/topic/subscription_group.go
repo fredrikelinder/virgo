@@ -9,7 +9,7 @@ import (
 // is consumed by one subscriber in the group.
 type SubscriptionGroup struct {
 	isClosed            func() bool
-	inbox               chan interface{}
+	inbox               chan Value
 	subscriberWaitGroup *sync.WaitGroup
 }
 
@@ -24,7 +24,7 @@ func (g *SubscriptionGroup) AddSubscriber(inboxLen int, subscriber Subscriber) b
 		return false
 	}
 
-	go func(inbox chan interface{}) {
+	go func(inbox chan Value) {
 		defer g.subscriberWaitGroup.Done()
 		defer subscriber.Close()
 
@@ -41,6 +41,6 @@ func (g *SubscriptionGroup) Close() error {
 	return nil
 }
 
-func (g *SubscriptionGroup) Consume(value interface{}) {
+func (g *SubscriptionGroup) Consume(value Value) {
 	g.inbox <- value
 }

@@ -7,22 +7,22 @@ import (
 // Topic represents a unidirectional fan-in and fan-out
 // communication channel.
 type Topic struct {
-	queue               chan interface{}
+	queue               chan Value
 	closing             chan struct{}
 	publisherWaitGroup  sync.WaitGroup
 	subscriberWaitGroup sync.WaitGroup
-	subscriberCs        []chan interface{}
+	subscriberCs        []chan Value
 	m                   sync.Mutex
 }
 
 // New returns a new Topic.
 func New() *Topic {
 	t := &Topic{
-		queue:   make(chan interface{}, 1),
+		queue:   make(chan Value, 1),
 		closing: make(chan struct{}),
 	}
 
-	go func(queue <-chan interface{}) {
+	go func(queue <-chan Value) {
 		defer func() {
 			subscriberCs := t.getSubscriberCs()
 			for _, subscriberC := range subscriberCs {
@@ -43,7 +43,7 @@ func New() *Topic {
 
 // Publish returns false if the topic is closed and otherwise it
 // publishes the message and returns true.
-func (t *Topic) Publish(message interface{}) bool {
+func (t *Topic) Publish(message Value) bool {
 	t.publisherWaitGroup.Add(1)
 	defer t.publisherWaitGroup.Done()
 
@@ -66,10 +66,10 @@ func (t *Topic) NewPublisher(outboxLen int) (*Publisher, bool) {
 		return nil, false
 	}
 
-	outbox := make(chan interface{}, outboxLen)
+	outbox := make(chan Value, outboxLen)
 
 	// one goroutine to pull messages out of the outbox into the queue of the subscriberWaitGroup
-	go func(queue chan<- interface{}, outbox chan interface{}) {
+	go func(queue chan<- Value, outbox chan Value) {
 		defer t.publisherWaitGroup.Done()
 
 		for message := range outbox {
@@ -91,10 +91,10 @@ func (t *Topic) AddSubscriber(inboxLen int, subscriber Subscriber) bool {
 		return false
 	}
 
-	inbox := make(chan interface{}, inboxLen)
+	inbox := make(chan Value, inboxLen)
 
 	// one goroutine to pull from inbox
-	go func(inbox <-chan interface{}) {
+	go func(inbox <-chan Value) {
 		defer t.subscriberWaitGroup.Done()
 		defer subscriber.Close()
 
@@ -113,7 +113,7 @@ func (t *Topic) AddSubscriber(inboxLen int, subscriber Subscriber) bool {
 func (t *Topic) NewSubscriptionGroup(inboxLen int) (*SubscriptionGroup, bool) {
 	g := &SubscriptionGroup{
 		isClosed:            t.IsClosed,
-		inbox:               make(chan interface{}, inboxLen),
+		inbox:               make(chan Value, inboxLen),
 		subscriberWaitGroup: &t.subscriberWaitGroup,
 	}
 
@@ -159,13 +159,13 @@ func (t *Topic) IsClosed() bool {
 	}
 }
 
-func (t *Topic) getSubscriberCs() []chan interface{} {
+func (t *Topic) getSubscriberCs() []chan Value {
 	t.m.Lock()
 	defer t.m.Unlock()
 	return t.subscriberCs
 }
 
-func (t *Topic) addSubscriberC(subscriberC chan interface{}) {
+func (t *Topic) addSubscriberC(subscriberC chan Value) {
 	t.m.Lock()
 	defer t.m.Unlock()
 	t.subscriberCs = append(t.subscriberCs, subscriberC)

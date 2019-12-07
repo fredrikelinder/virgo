@@ -7,5 +7,5 @@ type Subscriber interface {
 	io.Closer
 
 	// Consume consumes a published message.
-	Consume(message interface{})
+	Consume(message Value)
 }
