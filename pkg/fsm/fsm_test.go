@@ -4,28 +4,28 @@ import (
 	"fmt"
 )
 
-//go:generate stringer -type ExampleStateID
-type ExampleStateID int
-
-//go:generate stringer -type ExampleEventID
-type ExampleEventID int
+//go:generate stringer -type exampleStateID
+type exampleStateID int
 
 const (
-	stateZero = /*ExampleStateID*/ iota
-	stateOne
-	stateTwo
-	stateRed
-	stateGreen
-	stateYellow
+	StateZero exampleStateID = iota
+	StateOne
+	StateTwo
+	StateRed
+	StateGreen
+	StateYellow
 )
 
+//go:generate stringer -type exampleEventID
+type exampleEventID int
+
 const (
-	eventTick = /*ExampleEventID*/ iota
-	eventPostpone
-	eventPostponeTo
-	eventAlea
-	eventIacta
-	eventEst
+	EventTick exampleEventID = iota
+	EventPostpone
+	EventPostponeTo
+	EventAlea
+	EventIacta
+	EventEst
 )
 
 type event struct {
@@ -43,13 +43,13 @@ func makePrinter(lights string) func(Event) error {
 
 func ExampleFSM_actions() {
 	f := New()
-	pie(f.Init(stateRed, Transitions{
+	pie(f.Init(StateRed, Transitions{
 		stateRed:    {eventTick: {makePrinter("⚫⚫🍎"), f.To(stateGreen)}},
 		stateGreen:  {eventTick: {makePrinter("🍏⚫⚫"), f.To(stateYellow)}},
 		stateYellow: {eventTick: {makePrinter("🍏🍋⚫"), f.To(stateRed)}},
 	}, nil))
 
-	tick := &event{id: eventTick}
+	tick := &event{id: EventTick}
 	pie(f.On(tick))
 	pie(f.On(tick))
 	pie(f.On(tick))
@@ -64,7 +64,7 @@ func ExampleFSM_actions() {
 
 func ExampleFSM_stateCbs() {
 	f := New()
-	pie(f.Init(stateRed, Transitions{
+	pie(f.Init(StateRed, Transitions{
 		stateRed:    {eventTick: {f.To(stateGreen)}},
 		stateGreen:  {eventTick: {f.To(stateYellow)}},
 		stateYellow: {eventTick: {f.To(stateRed)}},
@@ -74,7 +74,7 @@ func ExampleFSM_stateCbs() {
 		stateYellow: {Enter: makePrinter("🍏🍋⚫")},
 	}))
 
-	tick := &event{id: eventTick}
+	tick := &event{id: EventTick}
 	pie(f.On(tick))
 	pie(f.On(tick))
 	pie(f.On(tick))
@@ -91,7 +91,7 @@ func ExampleFSM_postpone() {
 	postponed := makePrinter("postponed")
 
 	f := New()
-	pie(f.Init(stateZero, Transitions{
+	pie(f.Init(StateZero, Transitions{
 		stateZero: {
 			eventPostpone: {f.Postpone},
 			eventTick:     {ticker, f.To(stateOne)},
@@ -105,9 +105,9 @@ func ExampleFSM_postpone() {
 		},
 	}, nil))
 
-	tick := &event{id: eventTick}
-	postpone := &event{id: eventPostpone}
-	postponeTo := &event{id: eventPostponeTo}
+	tick := &event{id: EventTick}
+	postpone := &event{id: EventPostpone}
+	postponeTo := &event{id: EventPostponeTo}
 	pie(f.On(postpone))
 	fmt.Println("-0-")
 	pie(f.On(tick))
@@ -125,7 +125,7 @@ func ExampleFSM_postpone() {
 
 func ExampleFSM_postponeDeep() {
 	f := New()
-	pie(f.Init(stateZero, Transitions{
+	pie(f.Init(StateZero, Transitions{
 		stateZero: {
 			eventAlea:  {makePrinter("alea"), f.To(stateOne)},
 			eventIacta: {f.Postpone},
@@ -143,9 +143,9 @@ func ExampleFSM_postponeDeep() {
 		},
 	}, nil))
 
-	alea := &event{id: eventAlea}
-	iacta := &event{id: eventIacta}
-	est := &event{id: eventEst}
+	alea := &event{id: EventAlea}
+	iacta := &event{id: EventIacta}
+	est := &event{id: EventEst}
 	pie(f.On(est))
 	fmt.Println("-0-")
 	pie(f.On(est))
